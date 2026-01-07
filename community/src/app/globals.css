@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+@theme inline {
+  /* Definindo sua cor Esmeralda personalizada */
+  --color-brand-light: #34d399;
+  --color-brand: #10b981;
+  --color-brand-dark: #059669;
+  
+  /* Ajustando o raio das bordas para um visual moderno */
+  --radius-xl: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  background-color: #F9FAFB; /* Cinza bem clarinho que combinamos */
+  color: #111827;
+  font-family: Arial, Helvetica, sans-serif;
+}
