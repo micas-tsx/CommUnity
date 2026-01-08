@@ -2,7 +2,7 @@
 
 import { supabase } from "@/libs/supabase"
 import { useEffect, useState } from "react"
-import { Card } from './../components/Cards';
+import { FavorCard } from '../components/FavorCards';
 import type { Favors } from "@/types/Favors";
 
 export default function Home() {
@@ -19,16 +19,16 @@ export default function Home() {
   }, [])
 
   return (
-    <div  >
+    <div className="max-w-6xl mx-auto my-4">
       {favor.map(item => (
-        <Card
+        <FavorCard
           key={item.id}
           id={item.id}
           title={item.title}
           description={item.description}
           category={item.category} 
           type={item.type}
-          user_name={item.user_name}
+          userName={item.userName}
         />
       ))}
     </div >
