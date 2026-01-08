@@ -7,30 +7,39 @@ import type { Favors } from "@/types/Favors";
 
 export default function Home() {
   const [favor, setFavor] = useState<Favors[]>([])
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       const { data, error } = await supabase.from('favors').select('*')
-      if(data) {
-        setFavor(data)
-      }
+      
+      if (!error) setFavor(data)
+      setLoading(false)
+      
     }
     fetchData()
   }, [])
 
   return (
-    <div className="max-w-6xl mx-auto my-4">
-      {favor.map(item => (
-        <FavorCard
-          key={item.id}
-          id={item.id}
-          title={item.title}
-          description={item.description}
-          category={item.category} 
-          type={item.type}
-          userName={item.userName}
-        />
-      ))}
-    </div >
+    <main>
+      {loading && 
+        <p className="text-center py-20 text-gray-400">Carregando favores...</p>
+      }
+      <div className="max-w-6xl mx-auto">
+        {favor.map(item => (
+          <FavorCard
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            description={item.description}
+            category={item.category}
+            type={item.type}
+            userName={item.userName}
+          />
+        ))}
+      </div >
+    </main>
+
   );
 }
