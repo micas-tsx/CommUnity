@@ -1,6 +1,12 @@
+'use client'
+
+import { useAuth } from "@/contexts/AuthContext"
 import Link from "next/link"
 
 export const Header = () => {
+
+  const user = useAuth()
+
   return (
     <header className="flex px-32 py-4 shadow-sm aling-center justify-between">
       <div className="">
@@ -10,18 +16,30 @@ export const Header = () => {
         </a>
       </div>
       <div className="aling-center justify-center flex text-white">
-        <Link
-          href={'/login'}
-          className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
-        >
-          Login
-        </Link>
-        <Link
-          href={'/create-add'}
-          className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
-        >
-          Criar anuncio
-        </Link>
+        {!user ? (
+          <Link
+            href={'/login'}
+            className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
+          >
+            Login
+          </Link>
+        ) : (
+          <Link
+            href={'/perfil'}
+            className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
+          >
+          
+            Perfil
+          </Link>
+        )}
+        {user &&
+          <Link
+            href={'/create-add'}
+            className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
+          >
+            Criar anuncio
+          </Link>
+        }
       </div>
     </header>
   )

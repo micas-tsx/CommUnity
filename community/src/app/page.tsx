@@ -9,6 +9,8 @@ export default function Home() {
   const [favor, setFavor] = useState<Favors[]>([])
   const [loading, setLoading] = useState(true);
 
+  
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
