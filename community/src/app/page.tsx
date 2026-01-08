@@ -9,8 +9,6 @@ export default function Home() {
   const [favor, setFavor] = useState<Favors[]>([])
   const [loading, setLoading] = useState(true);
 
-  
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
@@ -37,7 +35,7 @@ export default function Home() {
             description={item.description}
             category={item.category}
             type={item.type}
-            userName={item.userName}
+            user_name={item.user_name}
           />
         ))}
       </div >

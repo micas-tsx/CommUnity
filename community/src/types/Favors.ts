@@ -4,5 +4,5 @@ export type Favors = {
   description: string | null;
   category: string;
   type: 'OFFER' | 'REQUEST';
-  userName: string;
+  user_name: string;
 }

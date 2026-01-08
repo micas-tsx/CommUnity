@@ -1,7 +1,7 @@
 import type { Favors } from "@/types/Favors"
 import { User } from "lucide-react";
 
-export function FavorCard({ title, description, category, type, userName }: Favors) {
+export function FavorCard({ title, description, category, type, user_name }: Favors) {
   return (
     <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow my-4 cursor-pointer">
       <div className="flex justify-between items-start mb-3">
@@ -19,7 +19,7 @@ export function FavorCard({ title, description, category, type, userName }: Favo
       <div className="flex items-center gap-3 pt-4 border-t border-gray-50 text-gray-500">
         <div className="flex items-center gap-1 text-xs">
           <User size={14} />
-          <span>{userName}</span>
+          <span>{user_name}</span>
         </div>
       </div>
     </div>

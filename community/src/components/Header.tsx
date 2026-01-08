@@ -11,8 +11,7 @@ export const Header = () => {
     <header className="flex px-32 py-4 shadow-sm aling-center justify-between">
       <div className="">
         <a href="/">
-          <h1 className="text-3xl font-black text-gray-900 italic">CommUnity.</h1>
-          <p className="text-gray-500">O que você pode trocar hoje?</p>
+          <h1 className="text-3xl font-black text-gray-900 italic">CommUnity</h1>
         </a>
       </div>
       <div className="aling-center justify-center flex text-white">
@@ -26,9 +25,8 @@ export const Header = () => {
         ) : (
           <Link
             href={'/perfil'}
-            className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
+            className="aling-center content-center h-10 mx-4 rounded-md bg-brand px-6 cursor-pointer"
           >
-          
             Perfil
           </Link>
         )}
