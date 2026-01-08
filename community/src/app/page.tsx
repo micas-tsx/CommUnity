@@ -1,27 +1,36 @@
+'use client'
+
+import { supabase } from "@/libs/supabase"
+import { useEffect, useState } from "react"
+import { Card } from './../components/Cards';
+import type { Favors } from "@/types/Favors";
+
 export default function Home() {
-  const categories = [
-    "Manutenção domestica",
-    "Tecnologia",
-    "Educação",
-    "Cuidados",
-    "Prestaçãode serviços gerais"
-  ]
+  const [favor, setFavor] = useState<Favors[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase.from('favors').select('*')
+      if(data) {
+        setFavor(data)
+      }
+    }
+    fetchData()
+  }, [])
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">O que você precisa hoje?</h1>
-
-      {/* Flex container para colocar os itens lado a lado e com espaço entre eles */}
-      <div className="flex flex-wrap gap-4">
-        {categories.map(item => (
-          <button
-            key={item}
-            className="bg-brand text-white mx-2 px-4 py-2 rounded-lg font-medium hover:bg-brand-dark transition-colors cursor-pointer"
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-    </div>
+    <div  >
+      {favor.map(item => (
+        <Card
+          key={item.id}
+          id={item.id}
+          title={item.title}
+          description={item.description}
+          category={item.category} 
+          type={item.type}
+          user_name={item.user_name}
+        />
+      ))}
+    </div >
   );
 }
