@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 export default function Page() {
   const [title, setTitle] = useState<string>('')
   const [description, SetDescription] = useState<string>('')
-  const [category, setCategory] = useState<string>('')
+  const [category, setCategory] = useState<string>('Favores em geral')
   const [type, setType] = useState<'OFFER' | 'REQUEST'>('REQUEST')
 
   const { user } = useAuth()

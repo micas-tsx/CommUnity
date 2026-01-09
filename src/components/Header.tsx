@@ -13,11 +13,7 @@ export const Header = () => {
   const router = useRouter()
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut()
-    /*
-      TODO: trocar o alert para toast
-    */
-    alert(error)
+    await supabase.auth.signOut()
     router.push("/")
     router.refresh()
   }
@@ -30,13 +26,20 @@ export const Header = () => {
       </div>
       <div className="items-center justify-center flex text-white">
         {!user ? (
-          <Link
-            href={'/login'}
-            className="items-center content-center h-10 mx-4 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
-          >
-            Login
-          </Link>
-
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={'/login'}
+              className="items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
+            >
+              Login
+            </Link>
+            <Link
+              href={'/login'}
+              className="items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
+            >
+              Criar anuncio
+            </Link>
+          </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             <Link
