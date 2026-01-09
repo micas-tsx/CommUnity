@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from "@/libs/supabase"
-import { User } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -13,7 +13,11 @@ export const Header = () => {
   const router = useRouter()
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut()
+    /*
+      TODO: trocar o console para toast
+    */
+    console.log(error)
     router.push("/")
     router.refresh()
   }
@@ -37,31 +41,25 @@ export const Header = () => {
           <div className="flex flex-wrap gap-2">
             <Link
               href={'/perfil'}
-              className="flex gap-2 items-center content-center h-10 mx-4 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
+              className="flex gap-2 items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
             >
               <User size={14} />
               <span>{userProfile?.full_name || user?.email}</span>
             </Link>
+            <Link
+              href={'/create-favor'}
+              className="items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
+            >
+              Criar anuncio
+            </Link>
             <button
               onClick={handleLogout}
-              className="bg-brand hover:bg-brand-dark text-white p-2 rounded font-bold cursor-pointer"
+              className="bg-brand hover:bg-brand-dark text-white p-2 rounded cursor-pointer"
             >
-              Deslogar
+              <LogOut size={20} />
             </button>
-
-
           </div>
-
-
         )}
-        {user &&
-          <Link
-            href={'/create-favor'}
-            className="items-center content-center h-10 mx-4 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
-          >
-            Criar anuncio
-          </Link>
-        }z
       </div>
     </header>
   )

@@ -9,6 +9,7 @@ export default function Perfil() {
   const { user } = useAuth() // Pega o usuário logado do seu contexto!
   const [fullName, setFullName] = useState('')
   const [apartmentBlock, setApartmentBlock] = useState('')
+  const [phone, setPhone] = useState('')
   const router = useRouter()
 
   // 1. [Desafio] Tente buscar os dados se eles já existirem no banco
@@ -17,13 +18,14 @@ export default function Perfil() {
       if (user) {
         const { data, error } = await supabase
           .from('profiles')
-          .select('full_name, apartment_block')
+          .select('full_name, apartment_block, phone')
           .eq('id', user.id)
           .single()
 
         if (data) {
           setFullName(data.full_name || '')
           setApartmentBlock(data.apartment_block || '')
+          setPhone(data.phone || '')
         }
       }
     }
@@ -40,17 +42,22 @@ export default function Perfil() {
         id: user.id, // O ID TEM que ser o do Auth
         full_name: fullName,
         apartment_block: apartmentBlock,
+        phone: phone,
       })
 
     if (!error) {
+      /*
+        TODO: adicionar o toast aqui
+      */
       alert("Perfil atualizado com sucesso!")
       router.push('/')
     } else {
+      /*
+        TODO: adicionar o toast aqui
+      */
       console.error(error)
     }
   }
-
-
   
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
@@ -70,14 +77,19 @@ export default function Perfil() {
           onChange={e => setApartmentBlock(e.target.value)}
           className="border border-gray-200 p-2 rounded"
         />
+        <input 
+          type="text" 
+          placeholder="Telefone" 
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          className="border border-gray-200 p-2 rounded"
+        />
         <button 
           onClick={handleSave}
           className="bg-brand hover:bg-brand-dark text-white p-2 rounded font-bold cursor-pointer"
         >
           Salvar Perfil
         </button>
-        
-
       </div>
     </div>
   )
