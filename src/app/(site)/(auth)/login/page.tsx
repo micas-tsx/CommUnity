@@ -12,8 +12,11 @@ export default function Page() {
   const handleLoggin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
+    /*
+      TODO: se der erro aparecer mensagem 
+    */
     if (error) {
-      console.log(error)
+      alert(error)
     } else {
       router.push('/')
       router.refresh()

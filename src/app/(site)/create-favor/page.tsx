@@ -45,7 +45,7 @@ export default function Page() {
         .insert([favorData])
 
       if(error) {
-        console.log(error)
+        alert(error)
       } else {
         router.push('/')
       } 

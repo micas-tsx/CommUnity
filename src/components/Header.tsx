@@ -15,9 +15,9 @@ export const Header = () => {
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut()
     /*
-      TODO: trocar o console para toast
+      TODO: trocar o alert para toast
     */
-    console.log(error)
+    alert(error)
     router.push("/")
     router.refresh()
   }

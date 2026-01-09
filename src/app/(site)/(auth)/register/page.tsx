@@ -46,9 +46,9 @@ export default function Page() {
 
       if (profileError) {
         /* 
-          TODO: inserior um toast no lugar desse console.log 
+          TODO: inserior um toast no lugar desse alert
         */
-        console.error("Erro ao salvar perfil:", profileError.message)
+        alert(`Erro ao salvar perfil: ${ profileError.message}`)
         alert("Usuário criado, mas houve um erro no perfil.")
       } else {
         /* 

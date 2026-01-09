@@ -55,7 +55,7 @@ export default function Perfil() {
       /*
         TODO: adicionar o toast aqui
       */
-      console.error(error)
+      alert(error)
     }
   }
   
