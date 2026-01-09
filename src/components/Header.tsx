@@ -1,43 +1,67 @@
 'use client'
 
 import { useAuth } from "@/contexts/AuthContext"
+import { supabase } from "@/libs/supabase"
+import { User } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export const Header = () => {
 
-  const user = useAuth()
+  const { user, userProfile } = useAuth()
 
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push("/")
+    router.refresh()
+  }
   return (
-    <header className="flex px-32 py-4 shadow-sm aling-center justify-between">
+    <header className="flex px-32 py-4 shadow-sm items-center justify-between">
       <div className="">
         <a href="/">
           <h1 className="text-3xl font-black text-gray-900 italic">CommUnity</h1>
         </a>
       </div>
-      <div className="aling-center justify-center flex text-white">
+      <div className="items-center justify-center flex text-white">
         {!user ? (
           <Link
             href={'/login'}
-            className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
+            className="items-center content-center h-10 mx-4 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
           >
             Login
           </Link>
+
         ) : (
-          <Link
-            href={'/perfil'}
-            className="aling-center content-center h-10 mx-4 rounded-md bg-brand px-6 cursor-pointer"
-          >
-            Perfil
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={'/perfil'}
+              className="flex gap-2 items-center content-center h-10 mx-4 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
+            >
+              <User size={14} />
+              <span>{userProfile?.full_name || user?.email}</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-brand hover:bg-brand-dark text-white p-2 rounded font-bold cursor-pointer"
+            >
+              Deslogar
+            </button>
+
+
+          </div>
+
+
         )}
         {user &&
           <Link
-            href={'/create-add'}
-            className="aling-center content-center mx-4 rounded-md bg-brand px-6 cursor-pointer"
+            href={'/create-favor'}
+            className="items-center content-center h-10 mx-4 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
           >
             Criar anuncio
           </Link>
-        }
+        }z
       </div>
     </header>
   )

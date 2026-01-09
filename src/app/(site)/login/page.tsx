@@ -37,7 +37,7 @@ export default function Page() {
         <input
           type="email"
           placeholder="Digite seu email"
-          className="border border-gray-200 px-2 py-2 my-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md"
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -45,14 +45,14 @@ export default function Page() {
         <input
           type="password"
           placeholder="Dfigite sua senha"
-          className="border border-gray-200 px-2 py-2 my-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 mb-2 rounded-md"
           required
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
 
-        <button type="button" onClick={handleLoggin} className="bg-brand text-white p-2 mt-4 rounded-md">Entrar</button>
-        <button type="button" onClick={handleSingUp} className="text-gray-600 p-2 mt-2 bg-gray-200 rounded-md">Cadastrar</button>
+        <button type="button" onClick={handleLoggin} className="bg-brand hover:bg-brand-dark text-white p-2 rounded-md cursor-pointer font-bold">Entrar</button>
+        <button type="button" onClick={handleSingUp} className="text-gray-600 p-2 bg-gray-200 hover:bg-gray-300 rounded-md cursor-pointer font-bold">Cadastrar</button>
       </form>
     </div>
   )

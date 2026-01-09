@@ -12,7 +12,10 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      const { data, error } = await supabase.from('favors').select('*')
+      const { data, error } = await supabase
+      .from('favors')
+      .select('*')
+      .order('created_at', { ascending: false })
       
       if (!error) setFavor(data)
       setLoading(false)

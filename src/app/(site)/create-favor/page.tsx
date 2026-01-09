@@ -89,14 +89,14 @@ export default function Page() {
         </select>
 
         <textarea
-          placeholder="descrição do seu anuncio"
+          placeholder="Descrição do seu anuncio"
           className="border border-gray-200 px-2 py-2 rounded-md"
           value={description}
           onChange={e => SetDescription(e.target.value)}
         >
         </textarea>
 
-        <button type="button" className="bg-brand rounded-md text-white py-4 text-xl cursor-pointer" onClick={handleSubmitForm}>Enviar anuncio</button>
+        <button type="button" className="bg-brand rounded-md text-white py-4 text-xl cursor-pointer font-bold" onClick={handleSubmitForm}>Enviar anuncio</button>
       </form>
 
     </div>

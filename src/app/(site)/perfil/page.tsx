@@ -50,6 +50,8 @@ export default function Perfil() {
     }
   }
 
+
+  
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-xl font-bold mb-4">Meus Dados</h1>
@@ -70,10 +72,11 @@ export default function Perfil() {
         />
         <button 
           onClick={handleSave}
-          className="bg-brand text-white p-2 rounded font-bold"
+          className="bg-brand hover:bg-brand-dark text-white p-2 rounded font-bold cursor-pointer"
         >
           Salvar Perfil
         </button>
+        
 
       </div>
     </div>
