@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { supabase } from "@/libs/supabase"
-import { House, User } from "lucide-react"
+import { House, Phone, User } from "lucide-react"
 
 export default function FavorDetails() {
   const { id } = useParams() // Pega o ID da URL
@@ -56,7 +56,7 @@ export default function FavorDetails() {
         {favor.description}
       </p>
 
-      <div className="border border-brand pt-6 bg-gray-50 p-4 rounded-lg gap-2">
+      <div className="border border-brand pt-6 bg-gray-50 p-4 rounded-lg gap-3">
         <h3 className="font-bold text-gray-800 mb-2">Informações do Morador</h3>
         <p className="text-gray-700 flex flex-wrap item-center gap-2"> 
           <User size={20} /> 
@@ -64,7 +64,11 @@ export default function FavorDetails() {
           </p>
         <p className="text-gray-700 flex flex-wrap item-center gap-2">
           <House size={20} />
-          Apartamento: {favor.profile?.apartment_block}
+          Apartamento: {favor.profile.apartment_block}
+        </p>
+        <p className="text-gray-700 flex flex-wrap item-center gap-2">
+          <Phone size={20} />
+          Telefone: {favor.profile.phone}
         </p>
         
         <a 
