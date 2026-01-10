@@ -73,9 +73,8 @@ export default function Page() {
           required
           className="border border-gray-200 px-2 py-2 rounded-md"
         >
-          <option>Escolha um abaixo</option>
-          <option>Tecnologia</option>
           <option>Favores em geral</option>
+          <option>Tecnologia</option>
           <option>Educação</option>
           <option>Manutenção</option>
         </select>
