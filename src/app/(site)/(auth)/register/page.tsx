@@ -3,6 +3,7 @@
 import { supabase } from "@/libs/supabase"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 export default function Page() {
   const [email, setEmail] = useState('')
@@ -27,7 +28,7 @@ export default function Page() {
       /* 
       TODO: inserior um toast no lugar desse alert 
       */
-      alert("Erro no cadastro: " + authError.message)
+      toast.error("Erro no cadastro: " + authError.message)
       return
     }
 
@@ -48,13 +49,13 @@ export default function Page() {
         /* 
           TODO: inserior um toast no lugar desse alert
         */
-        alert(`Erro ao salvar perfil: ${ profileError.message}`)
-        alert("Usuário criado, mas houve um erro no perfil.")
+        toast.error(`Erro ao salvar perfil: ${profileError.message}`)
+        toast.error("Usuário criado, mas houve um erro no perfil.")
       } else {
         /* 
           TODO: inserior um toast no lugar desse alert
         */
-        alert("Cadastro realizado! Verifique seu e-mail para confirmar.")
+        toast.success("Cadastro realizado! Verifique seu e-mail para confirmar.")
         router.push('/login')
       }
     }
@@ -62,7 +63,7 @@ export default function Page() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-4 md:mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-xl font-bold mb-4">Crie sua conta</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} >
         <input

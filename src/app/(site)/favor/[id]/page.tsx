@@ -12,7 +12,7 @@ export default function FavorDetails() {
 
   useEffect(() => {
     async function getDetails() {
-      // 1. Busca o anúncio
+      // Busca o anúncio
       const { data: favorData } = await supabase
         .from('favors')
         .select('*')
@@ -20,7 +20,7 @@ export default function FavorDetails() {
         .single()
 
       if (favorData) {
-        // 2. Busca o WhatsApp do dono do anúncio na tabela profiles
+        // Busca o WhatsApp do dono do anúncio na tabela profiles
         const { data: profileData } = await supabase
           .from('profiles')
           .select('phone, apartment_block')
@@ -42,11 +42,13 @@ export default function FavorDetails() {
   const whatsappLink = `https://wa.me/${favor.profile?.phone?.replace(/\D/g, '')}`
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg">
-      <div className="flex justify-between items-start mb-6">
+    <div className="max-w-2xl mx-4 md:mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg">
+      <div className="flex flex-col gap-2 justify-between items-start mb-6">
         <h1 className="text-3xl font-bold text-gray-900">{favor.title}</h1>
-        <span className="bg-brand/10 text-brand px-3 py-1 rounded-full text-sm font-bold">
-          {favor.type}
+        <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+          favor.type === 'OFFER' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+        }`}>
+          {favor.type === 'OFFER' ? 'OFERTA' : 'PEDIDO'}
         </span>
       </div>
 

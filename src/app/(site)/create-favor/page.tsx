@@ -4,6 +4,7 @@ import { useState } from "react"
 import { supabase } from "@/libs/supabase"
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 export default function Page() {
   const [title, setTitle] = useState<string>('')
@@ -45,15 +46,16 @@ export default function Page() {
         .insert([favorData])
 
       if(error) {
-        alert(error)
+        toast.error("Erro ao criar anúncio: " + error.message)
       } else {
+        toast.success("Anúncio criado com sucesso!")
         router.push('/')
       } 
     }
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-4 md:mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-xl font-bold mb-4">Solicite ou crie seu favor</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} >
         <input

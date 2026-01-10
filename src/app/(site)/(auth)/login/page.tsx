@@ -3,6 +3,7 @@
 import { supabase } from "@/libs/supabase"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 export default function Page() {
   const [email, setEmail] = useState('')
@@ -16,7 +17,7 @@ export default function Page() {
       TODO: se der erro aparecer mensagem 
     */
     if (error) {
-      alert(error)
+      toast.error("Erro no login: " + error.message)
     } else {
       router.push('/')
       router.refresh()
@@ -28,7 +29,7 @@ export default function Page() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-4 md:mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-xl font-bold mb-4">Entre na sua conta</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} >
         <input
