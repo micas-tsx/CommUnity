@@ -9,7 +9,7 @@ import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 
 export default function Perfil() {
-  const { user } = useAuth() // Pega o usuário logado do seu contexto!
+  const { user, userProfile, refreshProfile } = useAuth()
   const [fullName, setFullName] = useState('')
   const [apartmentBlock, setApartmentBlock] = useState('')
   const [phone, setPhone] = useState('')
@@ -17,8 +17,8 @@ export default function Perfil() {
   const router = useRouter()
 
   const [favors, setFavors] = useState<Favors[]>([])
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
 
-  // 1. [Desafio] Tente buscar os dados se eles já existirem no banco
   useEffect(() => {
     async function loadProfile() {
       if (user) {
@@ -43,67 +43,61 @@ export default function Perfil() {
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: true })
-        if (!error) setFavors(data)
+        if (!error) setFavors(data || [])
       }
     }
     getFavors()
     loadProfile()
   }, [user])
 
-  // 2. Função para salvar
   const handleSave = async () => {
     if (!user) return
 
     const { error } = await supabase
       .from('profiles')
       .upsert({
-        id: user.id, // O ID TEM que ser o do Auth
+        id: user.id,
         full_name: fullName,
         apartment_block: apartmentBlock,
         phone: phone,
       })
 
     if (!error) {
-      /*
-        TODO: adicionar o toast aqui
-      */
       toast.success("Perfil atualizado com sucesso!")
-      router.push('/')
-      router.refresh()
+      await refreshProfile?.()
     } else {
-      /*
-        TODO: adicionar o toast aqui
-      */
       toast.error("Erro ao atualizar perfil: " + error.message)
     }
   }
 
-  const handleDelete = async (favorId: string) => {
-    const confirmacao = confirm("Tens a certeza que queres apagar este anúncio?");
-
-    if (confirmacao) {
-      const { error } = await supabase
-        .from('favors')
-        .delete()
-        .eq('id', favorId) // ID do anúncio
-        .eq('user_id', user?.id); // Segurança extra: garante que só apaga se for o dono
-
-      if (!error) {
-        toast.success("Anúncio removido!");
-        // Recarregar os favores após deletar
-        const { data } = await supabase
-          .from('favors')
-          .select('*')
-          .eq('user_id', user?.id)
-          .order('created_at', { ascending: true })
-        setFavors(data || [])
-      } else {
-        toast.error("Erro ao apagar: " + error.message);
-      }
+  const handleDelete = (favorId: string) => {
+    if (!user?.id) {
+      toast.error('Você precisa estar logado para deletar anúncios')
+      return
     }
+    setShowDeleteConfirm(favorId)
   }
 
-  
+  const confirmDelete = async () => {
+    if (!showDeleteConfirm || !user?.id) return
+
+    const { error } = await supabase
+      .from('favors')
+      .delete()
+      .eq('id', showDeleteConfirm)
+      .eq('user_id', user.id)
+
+    if (!error) {
+      toast.success("Anúncio removido!");
+      
+      // Recarregar os favores após deletar
+      setFavors(prevFavors => prevFavors.filter(f => f.id !== showDeleteConfirm));
+    } else {
+      toast.error("Erro ao apagar: " + error.message)
+    }
+
+    setShowDeleteConfirm(null)
+  }
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -157,6 +151,29 @@ export default function Perfil() {
           ))
         )}
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+            <h3 className="text-lg font-bold mb-4">Confirmar exclusão</h3>
+            <p className="text-gray-600 mb-6">Tem certeza que deseja excluir este anúncio? Esta ação não pode ser desfeita.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-100 cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

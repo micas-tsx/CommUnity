@@ -16,9 +16,10 @@ type AuthContextType = {
   user: User | null
   userProfile: UserProfile | null
   loading: boolean
+  refreshProfile?: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, userProfile: null, loading: true })
+const AuthContext = createContext<AuthContextType>({ user: null, userProfile: null, loading: true, refreshProfile: async () => {} })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
@@ -37,6 +38,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!error && data) {
       setUserProfile(data)
+    }
+  }
+
+  // Função para recarregar o perfil
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchUserProfile(user.id)
     }
   }
 
@@ -72,7 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading }}>
+    <AuthContext.Provider value={{ user, userProfile, loading, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )
