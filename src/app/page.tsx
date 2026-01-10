@@ -4,79 +4,99 @@ import { supabase } from "@/libs/supabase"
 import { useEffect, useState } from "react"
 import { FavorCard } from '../components/FavorCards';
 import type { Favors } from "@/types/Favors";
-import Link from "next/link";
+import { Search } from "lucide-react";
 
 export default function Home() {
   const [favor, setFavor] = useState<Favors[]>([])
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // NOVO: Estado para controlar o tipo (Todos, Pedido ou Oferta)
+  const [filterType, setFilterType] = useState<'ALL' | 'REQUEST' | 'OFFER'>('ALL');
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-
-      // Criamos a query base
+      
       let query = supabase
         .from('favors')
         .select('*')
         .order('created_at', { ascending: false })
 
-      // Se houver algo digitado, filtramos pelo título
+      // Filtro de Texto
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`)
       }
 
-      const { data, error } = await query
+      // NOVO: Filtro de Tipo (se não for 'ALL', filtra pelo valor)
+      if (filterType !== 'ALL') {
+        query = query.eq('type', filterType)
+      }
 
+      const { data, error } = await query
       if (!error) setFavor(data || [])
       setLoading(false)
     }
 
-    // Debounce simples: espera o usuário parar de digitar por 300ms
     const timeOutId = setTimeout(() => fetchData(), 300);
     return () => clearTimeout(timeOutId);
-
-  }, [searchTerm])
+    
+  }, [searchTerm, filterType]) // Roda quando a busca OU o filtro mudar
 
   return (
-    <main>
-      <div className="flex items-center m-8 max-w-4xl mx-auto justify-center">
-        <input 
-          type="text"
-          placeholder="O que você está procurando? (ex: furadeira, bolo, carona...)"
-          className="w-full p-4 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-      {loading &&
-        <p className="text-center py-20 text-gray-400">Carregando favores...</p>
-      }
-      {!loading && favor.length === 0 && (
-        <div className="text-center py-20 text-gray-500">
-          <p className="text-xl">Nenhum favor encontrado com "{searchTerm}"</p>
-          <button 
-            onClick={() => setSearchTerm('')}
-            className="text-brand underline mt-2 cursor-pointer hover:text-brand-dark"
-          >
-            Limpar busca
-          </button>
+    <main className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-6xl mx-auto px-4">
+        
+        {/* BARRA DE PESQUISA */}
+        <div className="relative mb-6">
+          <input 
+            type="text"
+            placeholder="Procurar no condomínio..."
+            className="w-full p-4 pl-12 rounded-xl border border-gray-200 bg-white shadow-sm outline-none focus:ring-2 focus:ring-brand"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            <Search />
+          </div>
         </div>
-      )}
-      <div className="max-w-6xl mx-auto">
-        {favor.map(item => (
-          <Link key={item.id} href={`/favor/${item.id}`}>
-            <FavorCard
-              id={item.id}
-              title={item.title}
-              description={item.description}
-              category={item.category}
-              type={item.type}
-              user_name={item.user_name}
-            />
-          </Link>
-        ))}
-      </div >
+
+        {/* BOTÕES DE FILTRO (TABS) */}
+        <div className="flex gap-2 mb-4">
+          {[
+            { label: 'Tudo', value: 'ALL' },
+            { label: 'Pedidos', value: 'REQUEST' },
+            { label: 'Ofertas', value: 'OFFER' }
+          ].map((type) => (
+            <button
+              key={type.value}
+              onClick={() => setFilterType(type.value as any)}
+              className={`px-6 py-2 rounded-full font-medium transition-all ${
+                filterType === type.value 
+                ? 'bg-brand text-white shadow-md' 
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-brand'
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
+
+        {/* LISTAGEM DE CARDS */}
+        <div className="flex flex-col">
+          {loading ? (
+            <p className="text-center py-10">A carregar...</p>
+          ) : favor.length > 0 ? (
+            favor.map(item => (
+              <FavorCard key={item.id} {...item} />
+            ))
+          ) : (
+            <div className="text-center py-20 bg-white rounded-xl border border-dashed">
+              <p>Nenhum {filterType === 'ALL' ? 'anúncio' : filterType.toLowerCase()} encontrado.</p>
+            </div>
+          )}
+        </div>
+      </div>
     </main>
   );
 }

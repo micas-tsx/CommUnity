@@ -3,7 +3,7 @@ import { User } from "lucide-react";
 
 export function FavorCard({ title, description, category, type, user_name }: Favors) {
   return (
-    <div className="bg-white p-5 mx-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow my-4 cursor-pointer">
+    <div className="bg-white p-5 my-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
       <div className="flex justify-between items-start mb-3">
         <span className={`text-xs font-bold px-2 py-1 rounded-full ${
           type === 'OFFER' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
