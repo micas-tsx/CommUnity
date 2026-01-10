@@ -307,12 +307,6 @@ Contribuições são sempre bem-vindas! Este projeto visa criar uma comunidade m
 
 ---
 
-## 📄 Licença
-
-Este projeto está sob licença [MIT](LICENSE) (ou conforme sua preferência).
-
----
-
 ## 💡 Ideias Futuras
 
 - 🔔 Sistema de notificações em tempo real
@@ -328,6 +322,6 @@ Este projeto está sob licença [MIT](LICENSE) (ou conforme sua preferência).
 
 **Feito com ❤️ para conectar comunidades**
 
-[Reportar Bug](https://github.com/seu-usuario/community/issues) · [Solicitar Funcionalidade](https://github.com/seu-usuario/community/issues)
+[Reportar Bug](https://github.com/micas-tsx/community/issues) · [Solicitar Funcionalidade](https://github.com/micas-tsx/community/issues)
 
 </div>
