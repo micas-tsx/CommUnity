@@ -57,7 +57,7 @@ export default function Home() {
           <p className="text-xl">Nenhum favor encontrado com "{searchTerm}"</p>
           <button 
             onClick={() => setSearchTerm('')}
-            className="text-brand underline mt-2"
+            className="text-brand underline mt-2 cursor-pointer hover:text-brand-dark"
           >
             Limpar busca
           </button>
