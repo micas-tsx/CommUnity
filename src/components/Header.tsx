@@ -6,6 +6,7 @@ import { LogOut, MenuIcon, User } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { ImpactCounter } from "./ImpactCounter"
 
 export const Header = () => {
   const { user, userProfile } = useAuth()
@@ -24,6 +25,8 @@ export const Header = () => {
         <a href="/">
           <h1 className="md:text-3xl text-xl font-black text-gray-900 italic">CommUnity</h1>
         </a>
+
+        
       </div>
 
       <div

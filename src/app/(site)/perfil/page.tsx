@@ -4,17 +4,14 @@ import { FavorPerfil } from "@/components/FavorsPerfil"
 import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from "@/libs/supabase"
 import type { Favors } from "@/types/Favors"
-import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 
 export default function Perfil() {
-  const { user, userProfile, refreshProfile } = useAuth()
+  const { user, refreshProfile } = useAuth()
   const [fullName, setFullName] = useState('')
   const [apartmentBlock, setApartmentBlock] = useState('')
   const [phone, setPhone] = useState('')
-
-  const router = useRouter()
 
   const [favors, setFavors] = useState<Favors[]>([])
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
@@ -99,6 +96,19 @@ export default function Perfil() {
     setShowDeleteConfirm(null)
   }
 
+  const handleCompleteFavor = async (favorId: string) => {
+    const { error } = await supabase
+    .from('favors')
+    .update({is_completed: true})
+    .eq('id', favorId)
+    .eq('user_id', user?.id)
+
+    if(!error) {
+      toast.success('Parabéns por ajudar a comunidade! 🎉')
+      setFavors(prev => prev.map(f => f.id === favorId ? { ...f, is_completed: true } : f));
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div className="flex flex-col gap-4">
@@ -147,6 +157,8 @@ export default function Perfil() {
               type={item.type}
               user_name={item.user_name}
               onClick={handleDelete}
+              onComplete={handleCompleteFavor}
+              is_completed={item.is_completed}
             />
           ))
         )}

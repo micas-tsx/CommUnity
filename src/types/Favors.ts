@@ -7,4 +7,6 @@ export type Favors = {
   user_name: string;
   user_id?: string;
   onClick?: (id: string) => void
+  onComplete?: (id: string) => void
+  is_completed: boolean
 }
