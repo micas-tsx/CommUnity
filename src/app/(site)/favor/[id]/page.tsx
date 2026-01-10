@@ -39,7 +39,7 @@ export default function FavorDetails() {
   if (!favor) return <p className="text-center mt-20">Anúncio não encontrado.</p>
 
   // Formata o link do Zap: tira espaços/parênteses e monta a URL
-  const whatsappLink = `https://wa.me/${favor.profile?.phone?.replace(/\D/g, '')}`
+  const whatsappLink = `https://wa.me/${favor.profile?.phone?.replace(/\D/g, '')}?text="Olá vim do community, conseguimos fazer negócio?"`
 
   return (
     <div className="max-w-2xl mx-4 md:mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg">
