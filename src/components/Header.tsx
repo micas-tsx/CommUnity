@@ -22,7 +22,7 @@ export const Header = () => {
     <header className="relative flex md:px-32 py-4 px-10 shadow-sm items-center justify-between">
       <div className="">
         <a href="/">
-          <h1 className="md:text-3xl text-lg font-black text-gray-900 italic">CommUnity</h1>
+          <h1 className="md:text-3xl text-xl font-black text-gray-900 italic">CommUnity</h1>
         </a>
       </div>
 

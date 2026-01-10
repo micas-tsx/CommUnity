@@ -69,7 +69,7 @@ export default function Page() {
         <input
           type="email"
           placeholder="Digite seu email"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -77,7 +77,7 @@ export default function Page() {
         <input
           type="password"
           placeholder="Digite sua senha"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={password}
           onChange={e => setPassword(e.target.value)}
@@ -86,7 +86,7 @@ export default function Page() {
         <input
           type="text"
           placeholder="Digite seu nome"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={name}
           onChange={e => setName(e.target.value)}
@@ -95,7 +95,7 @@ export default function Page() {
         <input
           type="text"
           placeholder="Digite seu zap"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={phoneNumber}
           onChange={e => setPhoneNumber(e.target.value)}
@@ -103,7 +103,7 @@ export default function Page() {
         <input
           type="text"
           placeholder="Digite seu apartamento com bloco"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={apartment}
           onChange={e => setApartment(e.target.value)}

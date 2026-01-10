@@ -60,7 +60,7 @@ export default function Page() {
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} >
         <input
           type="text"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all rounded-md"
           placeholder="Titulo do anuncio"
           required
           value={title}
@@ -71,7 +71,7 @@ export default function Page() {
           value={category}
           onChange={e => setCategory(e.target.value)}
           required
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all rounded-md"
         >
           <option>Favores em geral</option>
           <option>Tecnologia</option>
@@ -82,7 +82,7 @@ export default function Page() {
         <select
           value={type}
           onChange={e => setType(e.target.value as 'OFFER' | 'REQUEST')}
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all rounded-md"
           required
         >
           <option value="REQUEST">Pedido</option>
@@ -91,7 +91,7 @@ export default function Page() {
 
         <textarea
           placeholder="Descrição do seu anuncio (opcional)"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all rounded-md"
           value={description}
           onChange={e => SetDescription(e.target.value)}
         >

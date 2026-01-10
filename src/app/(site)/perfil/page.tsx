@@ -108,21 +108,21 @@ export default function Perfil() {
           placeholder="Nome Completo"
           value={fullName}
           onChange={e => setFullName(e.target.value)}
-          className="border border-gray-200 p-2 rounded"
+          className="border border-gray-200 p-2 rounded-md focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
         />
         <input
           type="text"
           placeholder="Bloco / Apartamento"
           value={apartmentBlock}
           onChange={e => setApartmentBlock(e.target.value)}
-          className="border border-gray-200 p-2 rounded"
+          className="border border-gray-200 p-2 rounded-md focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
         />
         <input
           type="text"
           placeholder="Telefone"
           value={phone}
           onChange={e => setPhone(e.target.value)}
-          className="border border-gray-200 p-2 rounded"
+          className="border border-gray-200 p-2 rounded-md focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
         />
         <button
           onClick={handleSave}

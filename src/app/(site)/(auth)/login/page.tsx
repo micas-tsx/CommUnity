@@ -35,7 +35,7 @@ export default function Page() {
         <input
           type="email"
           placeholder="Digite seu email"
-          className="border border-gray-200 px-2 py-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 rounded-md focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -43,7 +43,7 @@ export default function Page() {
         <input
           type="password"
           placeholder="Digite sua senha"
-          className="border border-gray-200 px-2 py-2 mb-2 rounded-md"
+          className="border border-gray-200 px-2 py-2 mb-2 rounded-md focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all"
           required
           value={password}
           onChange={e => setPassword(e.target.value)}
