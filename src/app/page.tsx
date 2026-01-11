@@ -68,7 +68,7 @@ export default function Home() {
         </div>
 
         {/* BOTÕES DE FILTRO (TABS) */}
-        <div className="flex justify-between mb-2">
+        <div className="flex flex-col justify-between mb-2">
 
           <div className="flex flex-wrap gap-2 items-center">
             {[
