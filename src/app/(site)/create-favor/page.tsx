@@ -8,9 +8,10 @@ import toast from "react-hot-toast"
 
 export default function Page() {
   const [title, setTitle] = useState<string>('')
-  const [description, SetDescription] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
   const [category, setCategory] = useState<string>('Favores em geral')
   const [type, setType] = useState<'OFFER' | 'REQUEST'>('REQUEST')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { user } = useAuth()
   const router = useRouter()
@@ -20,21 +21,37 @@ export default function Page() {
   }
 
   const handleSubmitForm = async () => {
-
     if (!user) {
+      toast.error('Você precisa estar logado para criar um anúncio')
+      router.push('/login')
       return
-    } else {
+    }
+
+    if (!title.trim()) {
+      toast.error('Por favor, preencha o título')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('full_name')
         .eq('id', user.id)
-        .single();
+        .single()
+
+      if (profileError) {
+        console.error('Erro ao buscar perfil:', profileError)
+        toast.error('Erro ao buscar informações do perfil')
+        return
+      }
 
       const nomeDoUsuario = profile?.full_name || 'Morador'
 
       const favorData = {
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim() || null,
         type,
         category,
         user_name: nomeDoUsuario,
@@ -45,12 +62,18 @@ export default function Page() {
         .from('favors')
         .insert([favorData])
 
-      if(error) {
+      if (error) {
+        console.error('Erro ao criar favor:', error)
         toast.error("Erro ao criar anúncio: " + error.message)
       } else {
         toast.success("Anúncio criado com sucesso!")
         router.push('/')
-      } 
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error)
+      toast.error('Erro inesperado ao criar anúncio')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -93,16 +116,17 @@ export default function Page() {
           placeholder="Descrição do seu anuncio (opcional)"
           className="border border-gray-200 px-2 py-2 focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all rounded-md"
           value={description}
-          onChange={e => SetDescription(e.target.value)}
-        >
-        </textarea>
+          onChange={e => setDescription(e.target.value)}
+          rows={4}
+        />
 
         <button 
           type="button" 
-          className="bg-brand hover:bg-brand-dark rounded-md text-white py-4 text-xl cursor-pointer font-bold" 
+          className="bg-brand hover:bg-brand-dark rounded-md text-white py-4 text-xl cursor-pointer font-bold disabled:opacity-50 disabled:cursor-not-allowed" 
           onClick={handleSubmitForm}
+          disabled={isSubmitting}
         >
-          Enviar anuncio
+          {isSubmitting ? 'Enviando...' : 'Enviar anuncio'}
         </button>
       </form>
 

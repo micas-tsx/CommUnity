@@ -18,58 +18,85 @@ export default function Perfil() {
 
   useEffect(() => {
     async function loadProfile() {
-      if (user) {
+      if (!user) return
+
+      try {
         const { data, error } = await supabase
           .from('profiles')
           .select('full_name, apartment_block, phone')
           .eq('id', user.id)
           .single()
 
-        if (data) {
+        if (error) {
+          console.error('Erro ao carregar perfil:', error)
+          toast.error('Erro ao carregar dados do perfil')
+        } else if (data) {
           setFullName(data.full_name || '')
           setApartmentBlock(data.apartment_block || '')
           setPhone(data.phone || '')
         }
+      } catch (error) {
+        console.error('Erro inesperado ao carregar perfil:', error)
       }
     }
 
     const getFavors = async () => {
-      if (user) {
+      if (!user) return
+
+      try {
         const { data, error } = await supabase
           .from('favors')
           .select('*')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: true })
-        if (!error) setFavors(data || [])
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Erro ao carregar favores:', error)
+          toast.error('Erro ao carregar seus favores')
+        } else {
+          setFavors(data || [])
+        }
+      } catch (error) {
+        console.error('Erro inesperado ao carregar favores:', error)
       }
     }
+
     getFavors()
     loadProfile()
   }, [user])
 
   const handleSave = async () => {
-    if (!user) return
+    if (!user) {
+      toast.error('Você precisa estar logado para atualizar o perfil')
+      return
+    }
 
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        full_name: fullName,
-        apartment_block: apartmentBlock,
-        phone: phone,
-      })
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: fullName.trim(),
+          apartment_block: apartmentBlock.trim(),
+          phone: phone.trim(),
+        })
 
-    if (!error) {
-      toast.success("Perfil atualizado com sucesso!")
-      await refreshProfile?.()
-    } else {
-      toast.error("Erro ao atualizar perfil: " + error.message)
+      if (error) {
+        console.error('Erro ao atualizar perfil:', error)
+        toast.error("Erro ao atualizar perfil: " + error.message)
+      } else {
+        toast.success("Perfil atualizado com sucesso!")
+        await refreshProfile?.()
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao atualizar perfil:', error)
+      toast.error('Erro inesperado ao atualizar perfil')
     }
   }
 
   const handleDelete = (favorId: string) => {
     if (!user?.id) {
-      toast.error('Você precisa estar logado para deletar anúncios')
+      toast.error('Você precisa estar logado para deletar favores')
       return
     }
     setShowDeleteConfirm(favorId)
@@ -78,34 +105,52 @@ export default function Perfil() {
   const confirmDelete = async () => {
     if (!showDeleteConfirm || !user?.id) return
 
-    const { error } = await supabase
-      .from('favors')
-      .delete()
-      .eq('id', showDeleteConfirm)
-      .eq('user_id', user.id)
+    try {
+      const { error } = await supabase
+        .from('favors')
+        .delete()
+        .eq('id', showDeleteConfirm)
+        .eq('user_id', user.id)
 
-    if (!error) {
-      toast.success("Anúncio removido!");
-      
-      // Recarregar os favores após deletar
-      setFavors(prevFavors => prevFavors.filter(f => f.id !== showDeleteConfirm));
-    } else {
-      toast.error("Erro ao apagar: " + error.message)
+      if (error) {
+        console.error('Erro ao deletar favor:', error)
+        toast.error("Erro ao apagar: " + error.message)
+      } else {
+        toast.success("favor removido!")
+        // Recarregar os favores após deletar
+        setFavors(prevFavors => prevFavors.filter(f => f.id !== showDeleteConfirm))
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao deletar favor:', error)
+      toast.error('Erro inesperado ao deletar favor')
+    } finally {
+      setShowDeleteConfirm(null)
     }
-
-    setShowDeleteConfirm(null)
   }
 
   const handleCompleteFavor = async (favorId: string) => {
-    const { error } = await supabase
-    .from('favors')
-    .update({is_completed: true})
-    .eq('id', favorId)
-    .eq('user_id', user?.id)
+    if (!user?.id) {
+      toast.error('Você precisa estar logado para completar favores')
+      return
+    }
 
-    if(!error) {
-      toast.success('Parabéns por ajudar a comunidade! 🎉')
-      setFavors(prev => prev.map(f => f.id === favorId ? { ...f, is_completed: true } : f));
+    try {
+      const { error } = await supabase
+        .from('favors')
+        .update({ is_completed: true })
+        .eq('id', favorId)
+        .eq('user_id', user.id)
+
+      if (error) {
+        console.error('Erro ao completar favor:', error)
+        toast.error('Erro ao marcar favor como completo')
+      } else {
+        toast.success('Parabéns por ajudar a comunidade! 🎉')
+        setFavors(prev => prev.map(f => f.id === favorId ? { ...f, is_completed: true } : f))
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao completar favor:', error)
+      toast.error('Erro inesperado ao completar favor')
     }
   }
 
@@ -143,9 +188,9 @@ export default function Perfil() {
       </div>
 
       <div>
-        <h2 className="text-xl font-bold mb-4">Meus Anúncios</h2>
+        <h2 className="text-xl font-bold mb-4">Meus favores</h2>
         {favors.length === 0 ? (
-          <p className="text-gray-500">Nenhum anúncio encontrado.</p>
+          <p className="text-gray-500">Nenhum favor encontrado.</p>
         ) : (
           favors.map(item => (
             <FavorPerfil
@@ -168,7 +213,7 @@ export default function Perfil() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
             <h3 className="text-lg font-bold mb-4">Confirmar exclusão</h3>
-            <p className="text-gray-600 mb-6">Tem certeza que deseja excluir este anúncio? Esta ação não pode ser desfeita.</p>
+            <p className="text-gray-600 mb-6">Tem certeza que deseja excluir este favor? Esta ação não pode ser desfeita.</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(null)}

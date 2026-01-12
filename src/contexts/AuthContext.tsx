@@ -28,16 +28,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Função para buscar perfil do usuário
   const fetchUserProfile = async (userId: string) => {
-    if (!supabase) return
-    
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
 
-    if (!error && data) {
-      setUserProfile(data)
+      if (error) {
+        console.error('Erro ao buscar perfil do usuário:', error)
+      } else if (data) {
+        setUserProfile(data)
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao buscar perfil:', error)
     }
   }
 
@@ -50,18 +54,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const getSession = async () => {
-      if (!supabase) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Erro ao obter sessão:', error)
+        }
+        
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id)
+        }
+      } catch (error) {
+        console.error('Erro inesperado ao obter sessão:', error)
+      } finally {
         setLoading(false)
-        return
       }
-
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        await fetchUserProfile(session.user.id)
-      }
-      setLoading(false)
     }
 
     getSession()

@@ -1,26 +1,31 @@
 'use client'
 
 import { supabase } from "@/libs/supabase"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { FavorCard } from '../components/FavorCards';
 import type { Favors } from "@/types/Favors";
 import { Search } from "lucide-react";
 import { ImpactCounter } from "@/components/ImpactCounter";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { usePathname } from "next/navigation";
 
 export default function Home() {
   const [favor, setFavor] = useState<Favors[]>([])
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const isMountedRef = useRef(false)
+  const pathname = usePathname()
+  const lastPathnameRef = useRef<string | null>(null)
 
   // NOVO: Estado para controlar o tipo (Todos, Pedido ou Oferta)
   const [filterType, setFilterType] = useState<'ALL' | 'REQUEST' | 'OFFER'>('ALL');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
+  // Função para buscar dados (memoizada com useCallback)
+  const fetchData = useCallback(async () => {
+    setLoading(true)
 
+    try {
       let query = supabase
         .from('favors')
         .select('*')
@@ -32,22 +37,53 @@ export default function Home() {
         query = query.ilike('title', `%${searchTerm}%`)
       }
 
-      // NOVO: Filtro de Tipo (se não for 'ALL', filtra pelo valor)
+      // Filtro de Tipo (se não for 'ALL', filtra pelo valor)
       if (filterType !== 'ALL') {
         query = query.eq('type', filterType)
       }
 
       const { data, error } = await query
-      if (!error) setFavor(data || [])
+      
+      if (error) {
+        console.error('Erro ao buscar favores:', error)
+        toast.error('Erro ao carregar anúncios')
+      } else {
+        setFavor(data || [])
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error)
+      toast.error('Erro ao carregar anúncios')
+    } finally {
       setLoading(false)
     }
+  }, [searchTerm, filterType])
 
-    toast.success('caso tenha algum problema, dê um f5 :D')
-    const timeOutId = setTimeout(() => fetchData(), 300);
-    return () => clearTimeout(timeOutId);
+  // Detecta quando volta para a página principal
+  useEffect(() => {
+    // Se mudou de outra página para a principal, força recarregamento
+    if (lastPathnameRef.current && lastPathnameRef.current !== pathname && pathname === '/') {
+      fetchData()
+    }
+    lastPathnameRef.current = pathname
+  }, [pathname, fetchData])
 
-    
-  }, [searchTerm, filterType]) // Roda quando a busca OU o filtro mudar
+  // Carrega dados quando o componente monta ou quando os filtros mudam
+  useEffect(() => {
+    // Primeira vez que monta: carrega imediatamente
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      fetchData()
+      return
+    }
+
+    // Quando os filtros mudam: usa debounce se houver termo de busca
+    if (searchTerm) {
+      const timeOutId = setTimeout(() => fetchData(), 300)
+      return () => clearTimeout(timeOutId)
+    } else {
+      fetchData()
+    }
+  }, [fetchData, searchTerm, filterType])
 
   return (
     <main className="min-h-screen bg-gray-50 py-10">
@@ -67,10 +103,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* BOTÕES DE FILTRO (TABS) */}
-        <div className="flex flex-col justify-between mb-2">
-
-          <div className="flex flex-wrap gap-2 items-center">
+        {/* BOTÕES DE FILTRO (TABS) E IMPACT COUNTER */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+          <div className="flex gap-2 items-center w-full md:w-auto">
             {[
               { label: 'Tudo', value: 'ALL' },
               { label: 'Pedidos', value: 'REQUEST' },
@@ -78,8 +113,8 @@ export default function Home() {
             ].map((type) => (
               <button
                 key={type.value}
-                onClick={() => setFilterType(type.value as any)}
-                className={`px-6 py-2 rounded-lg items-center font-medium transition-all ${filterType === type.value
+                onClick={() => setFilterType(type.value as 'ALL' | 'REQUEST' | 'OFFER')}
+                className={`flex-1 md:flex-initial px-6 py-2 rounded-lg items-center font-medium transition-all text-center ${filterType === type.value
                   ? 'bg-brand text-white shadow-md'
                   : 'bg-white text-gray-600 border border-gray-200 hover:border-brand'
                   }`}

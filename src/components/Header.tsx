@@ -6,7 +6,6 @@ import { LogOut, MenuIcon, User } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { ImpactCounter } from "./ImpactCounter"
 
 export const Header = () => {
   const { user, userProfile } = useAuth()
@@ -15,18 +14,24 @@ export const Header = () => {
   const router = useRouter()
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push("/")
-    router.refresh()
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('Erro ao fazer logout:', error)
+      } else {
+        router.push("/")
+        router.refresh()
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao fazer logout:', error)
+    }
   }
   return (
     <header className="relative flex md:px-32 py-4 px-10 shadow-sm items-center justify-between">
-      <div className="">
-        <a href="/">
+      <div>
+        <Link href="/">
           <h1 className="md:text-3xl text-xl font-black text-gray-900 italic">CommUnity</h1>
-        </a>
-
-        
+        </Link>
       </div>
 
       <div
@@ -44,12 +49,6 @@ export const Header = () => {
               className="items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
             >
               Login
-            </Link>
-            <Link
-              href={'/login'}
-              className="items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
-            >
-              Criar anuncio
             </Link>
           </div>
         ) : (
@@ -87,13 +86,6 @@ export const Header = () => {
                 onClick={() => setMenuOpened(false)}
               >
                 Login
-              </Link>
-              <Link
-                href={'/login'}
-                className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded"
-                onClick={() => setMenuOpened(false)}
-              >
-                Criar anúncio
               </Link>
             </div>
           ) : (
