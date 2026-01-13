@@ -79,7 +79,8 @@ export default function FavorDetails() {
     : '#'
 
   return (
-    <div className="max-w-2xl mx-4 md:mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg">
+    <div className="flex-1 flex items-start justify-center py-10">
+      <div className="max-w-2xl w-full mx-4 md:mx-auto p-8 bg-white rounded-xl shadow-lg">
       <div className="flex flex-col gap-2 justify-between items-start mb-6">
         <h1 className="text-3xl font-bold text-gray-900">{favor.title}</h1>
         <span className={`text-xs font-bold px-2 py-1 rounded-full ${
@@ -126,6 +127,7 @@ export default function FavorDetails() {
             Telefone não disponível
           </p>
         )}
+      </div>
       </div>
     </div>
   )

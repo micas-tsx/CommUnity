@@ -155,7 +155,8 @@ export default function Perfil() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="flex-1 flex items-start justify-center py-10">
+      <div className="max-w-4xl w-full mx-auto px-4 p-6 bg-white rounded-lg shadow-md grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-xl font-bold mb-4">Meus Dados</h1>
         <input
@@ -231,6 +232,7 @@ export default function Perfil() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }

@@ -77,8 +77,9 @@ export default function Page() {
     }
   }
 
-  return (
-    <div className="max-w-md mx-4 md:mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  return ( 
+    <div className="flex-1 flex items-start justify-center py-10">
+      <div className="max-w-md w-full mx-4 md:mx-auto p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-xl font-bold mb-4">Solicite ou crie seu favor</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} >
         <input
@@ -129,7 +130,7 @@ export default function Page() {
           {isSubmitting ? 'Enviando...' : 'Enviar anuncio'}
         </button>
       </form>
-
+      </div>
     </div>
   )
 }

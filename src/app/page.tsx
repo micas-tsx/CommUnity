@@ -86,7 +86,7 @@ export default function Home() {
   }, [fetchData, searchTerm, filterType])
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <div className="flex-1 bg-gray-50 py-10">
       <div className="max-w-6xl mx-auto px-4">
 
         {/* BARRA DE PESQUISA */}
@@ -144,6 +144,6 @@ export default function Home() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }
