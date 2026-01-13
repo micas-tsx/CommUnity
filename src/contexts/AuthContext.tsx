@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import { getProfile } from "@/services/profiles"
 import { supabase } from '@/libs/supabase'
 import { User } from '@supabase/supabase-js'
 
@@ -29,19 +30,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Função para buscar perfil do usuário
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (error) {
-        console.error('Erro ao buscar perfil do usuário:', error)
-      } else if (data) {
-        setUserProfile(data)
-      }
+      const data = await getProfile(userId)
+      setUserProfile(data)
     } catch (error) {
-      console.error('Erro inesperado ao buscar perfil:', error)
+      console.error('Erro ao buscar perfil do usuário:', error)
     }
   }
 

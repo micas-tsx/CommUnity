@@ -1,4 +1,4 @@
-import { supabase } from "@/libs/supabase";
+import { getCompletedFavorsCount } from "@/services/favors";
 import { useEffect, useState } from "react";
 
 export const ImpactCounter = () => {
@@ -8,20 +8,12 @@ export const ImpactCounter = () => {
   useEffect(() => {
     const getCount = async () => {
       try {
-        const { count, error } = await supabase
-          .from('favors')
-          .select('*', { count: 'exact', head: true })
-          .eq('is_completed', true);
-
-        if (error) {
-          console.error('Erro ao buscar contador:', error);
-        } else {
-          setCompletedCount(count || 0);
-        }
+        const count = await getCompletedFavorsCount()
+        setCompletedCount(count)
       } catch (error) {
-        console.error('Erro inesperado ao buscar contador:', error);
+        console.error('Erro ao buscar contador:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     };
     

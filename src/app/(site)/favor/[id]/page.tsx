@@ -2,10 +2,11 @@
 
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { supabase } from "@/libs/supabase"
 import { House, Phone, User } from "lucide-react"
 import { FavorWithProfile } from "@/types/Profile"
 import toast from "react-hot-toast"
+import { getFavorById } from "@/services/favors"
+import { getProfile } from "@/services/profiles"
 
 export default function FavorDetails() {
   const { id } = useParams()
@@ -20,45 +21,26 @@ export default function FavorDetails() {
       }
 
       try {
-        // Busca o favor primeiro
-        const { data: favorData, error: favorError } = await supabase
-          .from('favors')
-          .select('*')
-          .eq('id', id)
-          .single()
+        const favorData = await getFavorById(id)
 
-        if (favorError) {
-          console.error('Erro ao buscar favor:', favorError)
-          toast.error('Erro ao carregar anúncio')
-          return
-        }
-
-        if (!favorData) {
-          return
-        }
-
-        // Busca o perfil do usuário em paralelo (se tiver user_id)
         let profileData = null
         if (favorData.user_id) {
-          const { data, error: profileError } = await supabase
-            .from('profiles')
-            .select('phone, apartment_block')
-            .eq('id', favorData.user_id)
-            .single()
-
-          if (profileError) {
+          try {
+            profileData = await getProfile(favorData.user_id)
+          } catch (profileError) {
             console.warn('Erro ao buscar perfil (não crítico):', profileError)
-          } else {
-            profileData = data
           }
         }
 
         setFavor({
           ...favorData,
-          profile: profileData
+          profile: profileData ? {
+            phone: profileData.phone,
+            apartment_block: profileData.apartment_block
+          } : null
         })
       } catch (error) {
-        console.error('Erro inesperado:', error)
+        console.error('Erro ao buscar favor:', error)
         toast.error('Erro ao carregar anúncio')
       } finally {
         setLoading(false)

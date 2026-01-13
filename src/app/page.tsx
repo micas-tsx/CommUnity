@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from "@/libs/supabase"
+import { getFavorsFiltered } from "@/services/favors"
 import { useEffect, useState, useCallback, useRef } from "react"
 import { FavorCard } from '../components/FavorCards';
 import type { Favors } from "@/types/Favors";
@@ -26,32 +26,10 @@ export default function Home() {
     setLoading(true)
 
     try {
-      let query = supabase
-        .from('favors')
-        .select('*')
-        .eq('is_completed', false)
-        .order('created_at', { ascending: false })
-
-      // Filtro de Texto
-      if (searchTerm) {
-        query = query.ilike('title', `%${searchTerm}%`)
-      }
-
-      // Filtro de Tipo (se não for 'ALL', filtra pelo valor)
-      if (filterType !== 'ALL') {
-        query = query.eq('type', filterType)
-      }
-
-      const { data, error } = await query
-      
-      if (error) {
-        console.error('Erro ao buscar favores:', error)
-        toast.error('Erro ao carregar anúncios')
-      } else {
-        setFavor(data || [])
-      }
+      const data = await getFavorsFiltered(searchTerm, filterType)
+      setFavor(data)
     } catch (error) {
-      console.error('Erro inesperado:', error)
+      console.error('Erro ao buscar favores:', error)
       toast.error('Erro ao carregar anúncios')
     } finally {
       setLoading(false)

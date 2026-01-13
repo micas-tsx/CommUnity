@@ -1,5 +1,6 @@
 'use client'
 
+import { createProfile } from "@/services/profiles"
 import { supabase } from "@/libs/supabase"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -79,24 +80,19 @@ export const Register = () => {
 
       // 2. Se o usuário foi criado, pegamos o ID e salvamos no Profiles
       if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: authData.user.id,
-              full_name: form.name.trim(),
-              apartment_block: form.apartment.trim(),
-              phone: form.phoneNumber.trim(),
-            }
-          ])
-
-        if (profileError) {
-          console.error('Erro ao salvar perfil:', profileError)
-          toast.error(`Erro ao salvar perfil: ${profileError.message}`)
-          toast.error("Usuário criado, mas houve um erro no perfil.")
-        } else {
+        try {
+          await createProfile({
+            id: authData.user.id,
+            email: form.email.trim(),
+            full_name: form.name.trim(),
+            apartment_block: form.apartment.trim(),
+            phone: form.phoneNumber.trim(),
+          })
           toast.success("Cadastro realizado!")
           router.push('/login')
+        } catch (profileError) {
+          console.error('Erro ao salvar perfil:', profileError)
+          toast.error("Erro ao salvar perfil.")
         }
       }
     } catch (error) {

@@ -2,10 +2,11 @@
 
 import { FavorPerfil } from "@/components/FavorsPerfil"
 import { useAuth } from "@/contexts/AuthContext"
-import { supabase } from "@/libs/supabase"
 import type { Favors } from "@/types/Favors"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
+import { getProfile, upsertProfile } from "@/services/profiles"
+import { getFavorsByUser, updateFavor, deleteFavor } from "@/services/favors"
 
 export default function Perfil() {
   const { user, refreshProfile } = useAuth()
@@ -21,22 +22,13 @@ export default function Perfil() {
       if (!user) return
 
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, apartment_block, phone')
-          .eq('id', user.id)
-          .single()
-
-        if (error) {
-          console.error('Erro ao carregar perfil:', error)
-          toast.error('Erro ao carregar dados do perfil')
-        } else if (data) {
-          setFullName(data.full_name || '')
-          setApartmentBlock(data.apartment_block || '')
-          setPhone(data.phone || '')
-        }
+        const data = await getProfile(user.id)
+        setFullName(data.full_name || '')
+        setApartmentBlock(data.apartment_block || '')
+        setPhone(data.phone || '')
       } catch (error) {
-        console.error('Erro inesperado ao carregar perfil:', error)
+        console.error('Erro ao carregar perfil:', error)
+        toast.error('Erro ao carregar dados do perfil')
       }
     }
 
@@ -44,20 +36,11 @@ export default function Perfil() {
       if (!user) return
 
       try {
-        const { data, error } = await supabase
-          .from('favors')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          console.error('Erro ao carregar favores:', error)
-          toast.error('Erro ao carregar seus favores')
-        } else {
-          setFavors(data || [])
-        }
+        const data = await getFavorsByUser(user.id)
+        setFavors(data)
       } catch (error) {
-        console.error('Erro inesperado ao carregar favores:', error)
+        console.error('Erro ao carregar favores:', error)
+        toast.error('Erro ao carregar favores')
       }
     }
 
@@ -72,25 +55,18 @@ export default function Perfil() {
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          full_name: fullName.trim(),
-          apartment_block: apartmentBlock.trim(),
-          phone: phone.trim(),
-        })
+      await upsertProfile({
+        id: user.id,
+        full_name: fullName.trim(),
+        apartment_block: apartmentBlock.trim(),
+        phone: phone.trim(),
+      })
 
-      if (error) {
-        console.error('Erro ao atualizar perfil:', error)
-        toast.error("Erro ao atualizar perfil: " + error.message)
-      } else {
-        toast.success("Perfil atualizado com sucesso!")
-        await refreshProfile?.()
-      }
+      toast.success("Perfil atualizado com sucesso!")
+      await refreshProfile?.()
     } catch (error) {
-      console.error('Erro inesperado ao atualizar perfil:', error)
-      toast.error('Erro inesperado ao atualizar perfil')
+      console.error('Erro ao atualizar perfil:', error)
+      toast.error('Erro ao atualizar perfil')
     }
   }
 
@@ -106,23 +82,12 @@ export default function Perfil() {
     if (!showDeleteConfirm || !user?.id) return
 
     try {
-      const { error } = await supabase
-        .from('favors')
-        .delete()
-        .eq('id', showDeleteConfirm)
-        .eq('user_id', user.id)
-
-      if (error) {
-        console.error('Erro ao deletar favor:', error)
-        toast.error("Erro ao apagar: " + error.message)
-      } else {
-        toast.success("favor removido!")
-        // Recarregar os favores após deletar
-        setFavors(prevFavors => prevFavors.filter(f => f.id !== showDeleteConfirm))
-      }
+      await deleteFavor(showDeleteConfirm)
+      toast.success("favor removido!")
+      setFavors(prevFavors => prevFavors.filter(f => f.id !== showDeleteConfirm))
     } catch (error) {
-      console.error('Erro inesperado ao deletar favor:', error)
-      toast.error('Erro inesperado ao deletar favor')
+      console.error('Erro ao deletar favor:', error)
+      toast.error('Erro ao deletar favor')
     } finally {
       setShowDeleteConfirm(null)
     }
@@ -135,22 +100,12 @@ export default function Perfil() {
     }
 
     try {
-      const { error } = await supabase
-        .from('favors')
-        .update({ is_completed: true })
-        .eq('id', favorId)
-        .eq('user_id', user.id)
-
-      if (error) {
-        console.error('Erro ao completar favor:', error)
-        toast.error('Erro ao marcar favor como completo')
-      } else {
-        toast.success('Parabéns por ajudar a comunidade! 🎉')
-        setFavors(prev => prev.map(f => f.id === favorId ? { ...f, is_completed: true } : f))
-      }
+      await updateFavor(favorId, { is_completed: true })
+      toast.success('Parabéns por ajudar a comunidade! 🎉')
+      setFavors(prev => prev.map(f => f.id === favorId ? { ...f, is_completed: true } : f))
     } catch (error) {
-      console.error('Erro inesperado ao completar favor:', error)
-      toast.error('Erro inesperado ao completar favor')
+      console.error('Erro ao completar favor:', error)
+      toast.error('Erro ao marcar favor como completo')
     }
   }
 

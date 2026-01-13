@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from "react"
-import { supabase } from "@/libs/supabase"
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { getProfile } from "@/services/profiles"
+import { createFavor } from "@/services/favors"
 
 export default function Page() {
   const [title, setTitle] = useState<string>('')
@@ -35,18 +36,7 @@ export default function Page() {
     setIsSubmitting(true)
 
     try {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .single()
-
-      if (profileError) {
-        console.error('Erro ao buscar perfil:', profileError)
-        toast.error('Erro ao buscar informações do perfil')
-        return
-      }
-
+      const profile = await getProfile(user.id)
       const nomeDoUsuario = profile?.full_name || 'Morador'
 
       const favorData = {
@@ -58,20 +48,23 @@ export default function Page() {
         user_id: user.id
       }
 
-      const { error } = await supabase
-        .from('favors')
-        .insert([favorData])
+      // Chama a rota server-side que insere e envia emails via Resend
+      const res = await fetch('/api/favors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(favorData)
+      })
 
-      if (error) {
-        console.error('Erro ao criar favor:', error)
-        toast.error("Erro ao criar anúncio: " + error.message)
-      } else {
-        toast.success("Anúncio criado com sucesso!")
-        router.push('/')
+      if (!res.ok) {
+        const err = await res.json().catch(() => null)
+        throw new Error(err?.error || 'Erro ao criar favor')
       }
+
+      toast.success("Anúncio criado com sucesso!")
+      router.push('/')
     } catch (error) {
-      console.error('Erro inesperado:', error)
-      toast.error('Erro inesperado ao criar anúncio')
+      console.error('Erro ao criar anúncio:', error)
+      toast.error('Erro ao criar anúncio')
     } finally {
       setIsSubmitting(false)
     }
