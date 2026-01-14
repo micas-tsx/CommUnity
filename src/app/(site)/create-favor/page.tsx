@@ -47,23 +47,8 @@ export default function Page() {
         user_name: nomeDoUsuario,
         user_id: user.id
       }
-
-      console.log('Tentando criar favor via API...')
-
-      // Chama a rota server-side que insere e envia emails via Resend
-      const res = await fetch('/api/favors', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(favorData)
-      })
-
-      console.log('Fetch concluído, status:', res.status)
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => null)
-        throw new Error(err?.error || 'Erro ao criar favor')
-      }
-
+      
+      await createFavor(favorData)
       toast.success("Anúncio criado com sucesso!")
       router.push('/')
     } catch (error) {

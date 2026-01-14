@@ -13,6 +13,9 @@ import { usePathname } from "next/navigation";
 export default function Home() {
   const [favor, setFavor] = useState<Favors[]>([])
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const isMountedRef = useRef(false)
   const pathname = usePathname()
@@ -22,17 +25,27 @@ export default function Home() {
   const [filterType, setFilterType] = useState<'ALL' | 'REQUEST' | 'OFFER'>('ALL');
 
   // Função para buscar dados (memoizada com useCallback)
-  const fetchData = useCallback(async () => {
-    setLoading(true)
+  const fetchData = useCallback(async (currentPage: number = 1, append: boolean = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
 
     try {
-      const data = await getFavorsFiltered(searchTerm, filterType)
-      setFavor(data)
+      const data = await getFavorsFiltered(searchTerm, filterType, currentPage, 10);
+      if (append) {
+        setFavor(prev => [...prev, ...data]);
+      } else {
+        setFavor(data);
+      }
+      setHasMore(data.length === 10); // Se retornou menos de 10, não há mais
     } catch (error) {
       console.error('Erro ao buscar favores:', error)
       toast.error('Erro ao carregar anúncios')
     } finally {
-      setLoading(false)
+      setLoading(false);
+      setLoadingMore(false);
     }
   }, [searchTerm, filterType])
 
@@ -40,7 +53,9 @@ export default function Home() {
   useEffect(() => {
     // Se mudou de outra página para a principal, força recarregamento
     if (lastPathnameRef.current && lastPathnameRef.current !== pathname && pathname === '/') {
-      fetchData()
+      setPage(1);
+      setHasMore(true);
+      fetchData(1, false);
     }
     lastPathnameRef.current = pathname
   }, [pathname, fetchData])
@@ -50,18 +65,27 @@ export default function Home() {
     // Primeira vez que monta: carrega imediatamente
     if (!isMountedRef.current) {
       isMountedRef.current = true
-      fetchData()
+      fetchData(1, false)
       return
     }
 
-    // Quando os filtros mudam: usa debounce se houver termo de busca
+    // Quando os filtros mudam: reseta página e carrega
+    setPage(1);
+    setHasMore(true);
     if (searchTerm) {
-      const timeOutId = setTimeout(() => fetchData(), 300)
+      const timeOutId = setTimeout(() => fetchData(1, false), 300)
       return () => clearTimeout(timeOutId)
     } else {
-      fetchData()
+      fetchData(1, false)
     }
   }, [fetchData, searchTerm, filterType])
+
+  // Função para carregar mais
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchData(nextPage, true);
+  }
 
   return (
     <div className="flex-1 bg-gray-50 py-10">
@@ -118,6 +142,17 @@ export default function Home() {
           ) : (
             <div className="text-center py-20 bg-white rounded-xl border border-dashed">
               <p>Nenhum {filterType === 'ALL' ? 'anúncio' : filterType.toLowerCase()} encontrado.</p>
+            </div>
+          )}
+          {hasMore && favor.length > 0 && (
+            <div className="text-center mt-6">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="bg-brand hover:bg-brand-dark text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {loadingMore ? 'Carregando...' : 'Carregar Mais'}
+              </button>
             </div>
           )}
         </div>

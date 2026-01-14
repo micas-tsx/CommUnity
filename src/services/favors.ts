@@ -77,12 +77,13 @@ export const deleteFavor = async (id: string) => {
   if (error) throw error
 }
 
-export const getFavorsFiltered = async (searchTerm: string = '', filterType: 'ALL' | 'REQUEST' | 'OFFER' = 'ALL') => {
+export const getFavorsFiltered = async (searchTerm: string = '', filterType: 'ALL' | 'REQUEST' | 'OFFER' = 'ALL', page: number = 1, limit: number = 10) => {
   let query = supabase
     .from('favors')
     .select('*')
     .eq('is_completed', false)
     .order('created_at', { ascending: false })
+    .range((page - 1) * limit, page * limit - 1)
 
   if (searchTerm) {
     query = query.ilike('title', `%${searchTerm}%`)
