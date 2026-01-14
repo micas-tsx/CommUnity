@@ -79,10 +79,9 @@ export async function POST(req: Request) {
       if (!RESEND_KEY) {
         console.warn('RESEND_API_KEY não configurada — pulando envio de emails')
       } else {
-        // @ts-ignore
+        
         const resend = new Resend(RESEND_KEY)
 
-        // Remover possíveis aspas do EMAIL_FROM
         let from = (process.env.EMAIL_FROM || 'noreply@community.com').replace(/^'+|'+$/g, "").replace(/^\"+|\"+$/g, "")
         const subject = `Novo favor criado: ${favor.title}`
         const html = `
