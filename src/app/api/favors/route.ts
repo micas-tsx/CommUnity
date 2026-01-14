@@ -1,16 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-
-// Import dinamicamente o Resend para evitar erro de build se a lib não estiver instalada
-async function getResend() {
-  try {
-    const mod = await import('resend')
-    // @ts-ignore
-    return mod.Resend
-  } catch (err) {
-    throw new Error('Módulo "resend" não encontrado. Rode: npm install resend')
-  }
-}
+import { Resend } from 'resend'
 
 export async function POST(req: Request) {
   try {
@@ -25,8 +15,8 @@ export async function POST(req: Request) {
     const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('Variáveis SUPABASE faltando: NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY')
-      return NextResponse.json({ error: 'Configuração do servidor incompleta (SUPABASE_SERVICE_ROLE_KEY)' }, { status: 500 })
+      console.error('erro nas notificações')
+      return NextResponse.json({ error: 'Configuração do servidor incompleta' }, { status: 500 })
     }
 
     const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
@@ -89,7 +79,6 @@ export async function POST(req: Request) {
       if (!RESEND_KEY) {
         console.warn('RESEND_API_KEY não configurada — pulando envio de emails')
       } else {
-        const Resend = await getResend()
         // @ts-ignore
         const resend = new Resend(RESEND_KEY)
 
