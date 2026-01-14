@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
 export async function POST(req: Request) {
+  console.log('POST /api/favors chamado - Iniciando processamento')
   try {
     const body = await req.json()
     const { title, description, category, type, user_id, user_name } = body
@@ -41,6 +42,8 @@ export async function POST(req: Request) {
       console.error('Erro ao inserir favor:', insertError)
       return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
+
+    console.log('Favor inserido com sucesso:', favor.id)
 
     // Buscar emails dos usuários via admin API (service role)
     let emails: string[] = []
