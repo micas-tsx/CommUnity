@@ -1,3 +1,5 @@
+'use client'
+
 import { getCompletedFavorsCount } from "@/services/favors";
 import { useEffect, useState } from "react";
 
