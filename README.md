@@ -53,6 +53,12 @@
 - **Exclusão de anúncios** com confirmação de segurança
 - **Controle total** sobre seus publicações
 
+### 🛡️ Área Administrativa (Síndico)
+- **Painel admin** com métricas gerais da plataforma
+- **Contagem de usuários e anúncios** em tempo real
+- **Exclusão de anúncios por perfil `sindico`**
+- **Acesso restrito por role** (`morador` ou `sindico`)
+
 ---
 
 ## 🛠️ Tecnologias
@@ -147,9 +153,11 @@ A comunicação entre vizinhos é facilitada através de integração direta com
    ```sql
    CREATE TABLE profiles (
      id UUID REFERENCES auth.users PRIMARY KEY,
+     email TEXT,
      full_name TEXT,
      apartment_block TEXT,
      phone TEXT,
+     role TEXT NOT NULL DEFAULT 'morador' CHECK (role IN ('morador', 'sindico')),
      created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
    );
    ```
@@ -187,6 +195,18 @@ A comunicação entre vizinhos é facilitada através de integração direta com
    CREATE POLICY "Usuários podem inserir seu próprio perfil"
      ON profiles FOR INSERT
      WITH CHECK (auth.uid() = id);
+
+   -- Permitir que síndico exclua perfis
+   CREATE POLICY "Sindico pode excluir perfis"
+     ON profiles FOR DELETE
+     USING (
+       EXISTS (
+         SELECT 1
+         FROM profiles p
+         WHERE p.id = auth.uid()
+           AND p.role = 'sindico'
+       )
+     );
    ```
    
    **Políticas RLS para `favors`:**
@@ -208,6 +228,25 @@ A comunicação entre vizinhos é facilitada através de integração direta com
    CREATE POLICY "Usuários podem excluir seus próprios favores"
      ON favors FOR DELETE
      USING (auth.uid() = user_id);
+
+   -- Permitir que síndico exclua qualquer favor
+   CREATE POLICY "Sindico pode excluir qualquer favor"
+     ON favors FOR DELETE
+     USING (
+       EXISTS (
+         SELECT 1
+         FROM profiles
+         WHERE profiles.id = auth.uid()
+           AND profiles.role = 'sindico'
+       )
+     );
+   ```
+
+   **Promover usuário para síndico (manual):**
+   ```sql
+   UPDATE profiles
+   SET role = 'sindico'
+   WHERE email = 'email-do-sindico@exemplo.com';
    ```
 
 5. **Execute o projeto em modo de desenvolvimento**

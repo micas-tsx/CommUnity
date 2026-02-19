@@ -1,5 +1,6 @@
 'use client'
 
+import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { FavorPerfil } from "@/components/FavorsPerfil"
 import { useAuth } from "@/contexts/AuthContext"
 import type { Favors } from "@/types/Favors"
@@ -165,28 +166,13 @@ export default function Perfil() {
         )}
       </div>
 
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-            <h3 className="text-lg font-bold mb-4">Confirmar exclusão</h3>
-            <p className="text-gray-600 mb-6">Tem certeza que deseja excluir este favor? Esta ação não pode ser desfeita.</p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-100 cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={!!showDeleteConfirm}
+        title="Confirmar exclusão"
+        message="Tem certeza que deseja excluir este favor? Esta ação não pode ser desfeita."
+        onCancel={() => setShowDeleteConfirm(null)}
+        onConfirm={confirmDelete}
+      />
       </div>
     </div>
   )

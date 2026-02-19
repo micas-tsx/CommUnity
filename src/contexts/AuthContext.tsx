@@ -4,14 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { getProfile } from "@/services/profiles"
 import { supabase } from '@/libs/supabase'
 import { User } from '@supabase/supabase-js'
-
-type UserProfile = {
-  id: string
-  email: string
-  full_name?: string
-  avatar_url?: string
-  [key: string]: any // adicione outros campos que tiver na tabela
-}
+import { UserProfile } from '@/types/Profile'
 
 type AuthContextType = {
   user: User | null

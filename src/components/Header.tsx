@@ -10,6 +10,7 @@ import { useState } from "react"
 export const Header = () => {
   const { user, userProfile } = useAuth()
   const [menuOpened, setMenuOpened] = useState(false)
+  const isAdmin = userProfile?.role === 'sindico'
 
   const router = useRouter()
 
@@ -66,6 +67,14 @@ export const Header = () => {
             >
               Criar anuncio
             </Link>
+            {isAdmin && (
+              <Link
+                href={'/admin'}
+                className="items-center content-center h-10 rounded-md bg-brand hover:bg-brand-dark px-6 cursor-pointer"
+              >
+                Admin
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="bg-brand hover:bg-brand-dark text-white p-2 rounded cursor-pointer"
@@ -105,6 +114,15 @@ export const Header = () => {
               >
                 Criar anúncio
               </Link>
+              {isAdmin && (
+                <Link
+                  href={'/admin'}
+                  className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded"
+                  onClick={() => setMenuOpened(false)}
+                >
+                  Painel Admin
+                </Link>
+              )}
               <button
                 onClick={() => {
                   handleLogout()
